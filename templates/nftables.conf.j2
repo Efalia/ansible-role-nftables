@@ -1,0 +1,49 @@
+#!/usr/sbin/nft -f
+
+flush ruleset
+
+table inet filter {
+    chain input {
+        type filter hook input priority 0; policy drop;
+
+        # established/related
+        ct state established,related accept
+
+        # invalid
+        ct state invalid drop
+
+        # loopback
+        iifname lo accept
+
+        # ssh
+        tcp dport 22 ct state new accept
+
+      {% for port in ports_tcp_ouverts %}
+        tcp dport {{ port }} ct state new accept
+
+      {% endfor %}
+
+        # snmpd
+        udp dport 161 ct state new accept
+
+        # pour le futur outil de monitoring (ex-cockpit)
+        tcp dport 9090 ct state new accept
+
+        # accept all icmp
+        ip protocol icmp accept
+        ip6 nexthdr ipv6-icmp accept
+
+        # uncomment to enable logging
+        log prefix "[nftables] Input Denied: " flags all counter drop
+    }
+    chain forward {
+        # drop everything (if not a router)
+        type filter hook forward priority 0; policy drop;
+
+        # uncomment to enable logging
+        log prefix "[nftables] Forward Denied: " flags all counter drop
+    }
+    chain output {
+        type filter hook output priority 0; policy accept;
+    }
+}

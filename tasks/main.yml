@@ -1,0 +1,11 @@
+---
+- name: Installation du paquet nftables
+  apt:
+    name: nftables
+- name: Configuration de nftables
+  template:
+    src: "../templates/nftables.conf.j2"
+    dest: /etc/nftables.conf
+    mode: '644'
+- name: Activation de nftables
+  service: name=nftables state=restarted enabled=true

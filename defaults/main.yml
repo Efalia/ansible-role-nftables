@@ -1,0 +1,4 @@
+---
+ports_tcp_ouverts:
+  - 80
+  - 443
