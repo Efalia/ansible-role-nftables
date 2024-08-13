@@ -7,5 +7,10 @@
     src: "../templates/nftables.conf.j2"
     dest: /etc/nftables.conf
     mode: '644'
+- name: Detection Docker
+  stat:
+    path: /.dockerenv
+  register: docker_env
 - name: Activation de nftables
   service: name=nftables state=restarted enabled=true
+  when: docker_env.stat.exists == False
