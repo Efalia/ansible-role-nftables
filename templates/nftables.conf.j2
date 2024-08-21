@@ -26,9 +26,6 @@ table inet filter {
         # snmpd
         udp dport 161 ct state new accept
 
-        # pour le futur outil de monitoring (ex-cockpit)
-        tcp dport 9090 ct state new accept
-
         # accept all icmp
         ip protocol icmp accept
         ip6 nexthdr ipv6-icmp accept
